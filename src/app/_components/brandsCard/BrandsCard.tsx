@@ -1,7 +1,7 @@
+import type { BrandLike } from "@/types/types";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import type { BrandLike } from "../productDetails/ProductDetails";
 
 type brandPropsType = {
   brand: BrandLike;

@@ -6,8 +6,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import ProductCard from "../productCard/ProductCard";
-import type { ProductDetailsData } from "../productDetails/ProductDetails";
 import type { NavigationOptions } from "swiper/types";
+import type { ProductDetailsData } from "@/types/types";
 
 type ProductDetailsProps = {
   similarProducts?: ProductDetailsData[];

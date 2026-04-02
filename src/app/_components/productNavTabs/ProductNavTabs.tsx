@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { ProductDetailsData } from "../productDetails/ProductDetails";
 import Rating from "../rating/Rating";
 import RatingBreakdown from "../rating/RatingBreakdown";
+import type { ProductDetailsData } from "@/types/types";
+import type { ReviewItem } from "../rating/RatingBreakdown";
 
 type TabKey = "details" | "reviews" | "shipping";
 type ProductNavTabsPropsType = {
@@ -14,6 +15,8 @@ export default function ProductNavTabs({ product }: ProductNavTabsPropsType) {
 
   const tabButtonBase =
     "flex items-center gap-2 cursor-pointer px-6 py-4 font-medium whitespace-nowrap transition-all duration-200";
+
+  const reviews: ReviewItem[] = product?.reviews || [];
 
   return (
     <section id="product-details-tabs" className="py-8">
@@ -242,7 +245,7 @@ export default function ProductNavTabs({ product }: ProductNavTabsPropsType) {
                       ratingQuantity={product?.ratingsQuantity}
                     />
                   </div>
-                  {product && <RatingBreakdown reviews={product.reviews} />}
+                  {product && <RatingBreakdown reviews={reviews} />}
                 </div>
                 <div className="border-t border-gray-200 pt-6">
                   <div className="flex flex-col items-center justify-center text-center py-8">

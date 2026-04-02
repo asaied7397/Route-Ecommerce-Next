@@ -2,8 +2,8 @@ import Link from "next/link";
 import React from "react";
 import BrandsCard from "../_components/brandsCard/BrandsCard";
 import { getAllBrands } from "@/services/api/api";
-import type { BrandLike } from "../_components/productDetails/ProductDetails";
 import Features from "../_components/Features/Features";
+import type { BrandLike } from "@/types/types";
 
 export default async function page() {
   const brands: BrandLike[] = await getAllBrands();

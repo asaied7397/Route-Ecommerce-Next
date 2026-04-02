@@ -1,12 +1,12 @@
-type ReviewItem = {
+export type ReviewItem = {
   _id: string;
   review: string;
   rating: number;
   createdAt: string;
-  product: string;
-  updatedAt: string;
-  __v: number;
-  user: UserLike;
+  product?: string;
+  updatedAt?: string;
+  __v?: number;
+  user?: UserLike;
 };
 
 type UserLike = {
