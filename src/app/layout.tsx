@@ -3,6 +3,9 @@ import "./globals.css";
 import Navbar from "./_components/Navbar/Navbar";
 import { Exo } from "next/font/google";
 import Footer from "./_components/Footer/Footer";
+import Providers from "./_components/providers/providers";
+import ReduxProvider from "./_components/providers/ReduxProvider";
+import Hydrator from "./_components/hydrator/Hydrator";
 
 export const metadata: Metadata = {
   title: "FreshCart",
@@ -22,9 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={exo.className}>
-        <Navbar />
-        <>{children}</>
-        <Footer />
+        <Providers>
+          <ReduxProvider>
+            <Navbar />
+            {children}
+            <Hydrator />
+            <Footer />
+          </ReduxProvider>
+        </Providers>
       </body>
     </html>
   );

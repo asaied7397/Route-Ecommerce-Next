@@ -14,7 +14,7 @@ const features = [
 
 export default function Features() {
   return (
-    <div className="bg-green-50 border-y border-green-100">
+    <div className={"bg-green-50 border-y border-green-100"}>
       <div className="container mx-auto px-4 py-6">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map(({ icon: Icon, title, desc }) => (

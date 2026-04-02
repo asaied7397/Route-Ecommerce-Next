@@ -1,6 +1,7 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState, type FormEvent } from "react";
 import freshCartLogo from "@/assets/images/freshcart-logo.svg";
 import {
   Sheet,
@@ -9,8 +10,39 @@ import {
   SheetTrigger,
   SheetOverlay,
 } from "@/components/ui/sheet";
+import NavbarAuth from "./NavbarAuth";
+import NavbarForm from "./NavbarForm";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/redux/hooks";
 
 const Navbar = () => {
+  const { status, data: session } = useSession();
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState("");
+  const { items } = useAppSelector((state) => state.cart);
+  const { items: wishlistItems } = useAppSelector((state) => state.wishlist);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const trimmedValue = searchValue.trim();
+
+    const params = new URLSearchParams();
+
+    if (trimmedValue) {
+      params.set("keyword", trimmedValue);
+    }
+
+    const query = params.toString();
+
+    router.push(query ? `/search?${query}` : "/search");
+
+    setSearchValue("");
+    setOpen(false);
+  }
+
   return (
     <>
       <div className="hidden lg:block text-sm font-medium border-b border-gray-100">
@@ -85,40 +117,7 @@ const Navbar = () => {
               </div>
               <span className="w-px h-4 bg-gray-200"></span>
               <div className="flex items-center gap-4">
-                <Link
-                  className="flex items-center gap-1.5 text-gray-600 hover:text-green-600 transition-colors"
-                  href="/login"
-                >
-                  <svg
-                    className="svg-inline--fa fa-heart text-xl"
-                    viewBox="0 0 448 512"
-                    width="15"
-                    height="12"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M144 128a80 80 0 1 1 160 0 80 80 0 1 1 -160 0zm208 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0zM48 480c0-70.7 57.3-128 128-128l96 0c70.7 0 128 57.3 128 128l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-97.2-78.8-176-176-176l-96 0C78.8 304 0 382.8 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8z"
-                    ></path>
-                  </svg>
-                  <span>Sign In</span>
-                </Link>
-                <Link
-                  className="flex items-center gap-1.5 text-gray-600 hover:text-green-600 transition-colors"
-                  href="/register"
-                >
-                  <svg
-                    className="svg-inline--fa fa-heart text-xl"
-                    viewBox="0 0 640 512"
-                    width="15"
-                    height="12"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M136 128a120 120 0 1 1 240 0 120 120 0 1 1 -240 0zM48 482.3C48 383.8 127.8 304 226.3 304l59.4 0c98.5 0 178.3 79.8 178.3 178.3 0 16.4-13.3 29.7-29.7 29.7L77.7 512C61.3 512 48 498.7 48 482.3zM544 96c13.3 0 24 10.7 24 24l0 48 48 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-48 0 0 48c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-48-48 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0 0-48c0-13.3 10.7-24 24-24z"
-                    ></path>
-                  </svg>
-                  <span>Sign Up</span>
-                </Link>
+                <NavbarAuth secondary />
               </div>
             </div>
           </div>
@@ -140,31 +139,9 @@ const Navbar = () => {
                   src={freshCartLogo}
                 />
               </Link>
-              <form className="hidden lg:flex flex-1 max-w-2xl">
-                <div className="relative w-full">
-                  <input
-                    type="text"
-                    placeholder="Search for products, brands and more..."
-                    className="w-full px-5 py-3 pr-12 rounded-full border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 cursor-pointer rounded-full bg-green-600 text-white flex items-center justify-center hover:bg-green-700 transition-colors"
-                  >
-                    <svg
-                      width="18"
-                      height="14"
-                      viewBox="0 0 512 512"
-                      fill="none"
-                    >
-                      <path
-                        fill="#ffffff"
-                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-              </form>
+
+              <NavbarForm />
+
               <nav className="hidden xl:flex items-center gap-6">
                 <Link
                   className="text-gray-700 hover:text-green-600 font-medium transition-colors"
@@ -203,25 +180,25 @@ const Navbar = () => {
                       </Link>
                       <Link
                         className="block px-4 py-2.5 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-colors"
-                        href="/products?category=6439d58a0049ad0b52b9003f"
+                        href="/products?category=6439d2d167d9aa4ca970649f"
                       >
                         Electronics
                       </Link>
                       <Link
                         className="block px-4 py-2.5 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-colors"
-                        href="/products?category=6439d5b90049ad0b52b90048"
+                        href="/products?category=6439d58a0049ad0b52b9003f"
                       >
                         Women&apos;s Fashion
                       </Link>
                       <Link
                         className="block px-4 py-2.5 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-colors"
-                        href="/products?category=6439d2d167d9aa4ca970649f"
+                        href="/products?category=6439d5b90049ad0b52b90048"
                       >
                         Men&apos;s Fashion
                       </Link>
                       <Link
                         className="block px-4 py-2.5 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-colors"
-                        href="/products?category=6439d40367d9aa4ca97064a8"
+                        href="/products?category=6439d30b67d9aa4ca97064b1"
                       >
                         Beauty &amp; Health
                       </Link>
@@ -274,6 +251,11 @@ const Navbar = () => {
                       d="M378.9 80c-27.3 0-53 13.1-69 35.2l-34.4 47.6c-4.5 6.2-11.7 9.9-19.4 9.9s-14.9-3.7-19.4-9.9l-34.4-47.6c-16-22.1-41.7-35.2-69-35.2-47 0-85.1 38.1-85.1 85.1 0 49.9 32 98.4 68.1 142.3 41.1 50 91.4 94 125.9 120.3 3.2 2.4 7.9 4.2 14 4.2s10.8-1.8 14-4.2c34.5-26.3 84.8-70.4 125.9-120.3 36.2-43.9 68.1-92.4 68.1-142.3 0-47-38.1-85.1-85.1-85.1zM271 87.1c25-34.6 65.2-55.1 107.9-55.1 73.5 0 133.1 59.6 133.1 133.1 0 68.6-42.9 128.9-79.1 172.8-44.1 53.6-97.3 100.1-133.8 127.9-12.3 9.4-27.5 14.1-43.1 14.1s-30.8-4.7-43.1-14.1C176.4 438 123.2 391.5 79.1 338 42.9 294.1 0 233.7 0 165.1 0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1l15 20.7 15-20.7z"
                     ></path>
                   </svg>
+                  {wishlistItems.length ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-4.5 h-4.5 flex items-center justify-center">
+                      {wishlistItems.length}
+                    </span>
+                  ) : null}
                 </Link>
                 <Link
                   className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors group"
@@ -291,25 +273,16 @@ const Navbar = () => {
                       d="M24-16C10.7-16 0-5.3 0 8S10.7 32 24 32l45.3 0c3.9 0 7.2 2.8 7.9 6.6l52.1 286.3c6.2 34.2 36 59.1 70.8 59.1L456 384c13.3 0 24-10.7 24-24s-10.7-24-24-24l-255.9 0c-11.6 0-21.5-8.3-23.6-19.7l-5.1-28.3 303.6 0c30.8 0 57.2-21.9 62.9-52.2L568.9 69.9C572.6 50.2 557.5 32 537.4 32l-412.7 0-.4-2c-4.8-26.6-28-46-55.1-46L24-16zM208 512a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm224 0a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"
                     ></path>
                   </svg>
+                  {items.length ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-4.5 h-4.5 flex items-center justify-center">
+                      {items.length}
+                    </span>
+                  ) : null}
                 </Link>
-                <Link
-                  className="hidden lg:flex items-center gap-2 ml-2 px-5 py-2.5 rounded-full bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors shadow-sm shadow-green-600/20"
-                  href="/login"
-                >
-                  <svg
-                    className="svg-inline--fa fa-heart text-xl"
-                    viewBox="0 0 512 512"
-                    width="18"
-                    height="14"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M144 128a80 80 0 1 1 160 0 80 80 0 1 1 -160 0zm208 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0zM48 480c0-70.7 57.3-128 128-128l96 0c70.7 0 128 57.3 128 128l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-97.2-78.8-176-176-176l-96 0C78.8 304 0 382.8 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8z"
-                    ></path>
-                  </svg>
-                  Sign In
-                </Link>
-                <Sheet>
+
+                <NavbarAuth />
+
+                <Sheet open={open} onOpenChange={setOpen}>
                   <SheetTrigger className="lg:hidden cursor-pointer ml-1 w-10 h-10 rounded-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center transition-colors">
                     <svg
                       className="svg-inline--fa fa-bars"
@@ -353,12 +326,19 @@ const Navbar = () => {
                             </svg>
                           </SheetClose>
                         </div>
-                        <form className="p-4 border-b border-gray-100">
+                        <form
+                          className="p-4 border-b border-gray-100"
+                          onSubmit={handleSubmit}
+                        >
                           <div className="relative">
                             <input
+                              value={searchValue}
+                              onChange={(e) => {
+                                setSearchValue(e.target.value);
+                              }}
                               type="text"
                               placeholder="Search products..."
-                              className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 text-sm"
+                              className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 text-sm"
                             />
                             <button
                               type="submit"
@@ -381,24 +361,28 @@ const Navbar = () => {
                         <nav className="p-4">
                           <div className="space-y-1">
                             <Link
+                              onClick={() => setOpen(false)}
                               className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors"
                               href="/"
                             >
                               Home
                             </Link>
                             <Link
+                              onClick={() => setOpen(false)}
                               className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors"
                               href="/products"
                             >
                               Shop
                             </Link>
                             <Link
+                              onClick={() => setOpen(false)}
                               className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors"
                               href="/categories"
                             >
                               Categories
                             </Link>
                             <Link
+                              onClick={() => setOpen(false)}
                               className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-colors"
                               href="/brands"
                             >
@@ -409,6 +393,7 @@ const Navbar = () => {
                         <div className="mx-4 border-t border-gray-100"></div>
                         <div className="p-4 space-y-1">
                           <Link
+                            onClick={() => setOpen(false)}
                             className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-green-50 transition-colors"
                             href="/wishlist"
                           >
@@ -432,6 +417,7 @@ const Navbar = () => {
                             </div>
                           </Link>
                           <Link
+                            onClick={() => setOpen(false)}
                             className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-green-50 transition-colors"
                             href="/cart"
                           >
@@ -456,22 +442,87 @@ const Navbar = () => {
                           </Link>
                         </div>
                         <div className="mx-4 border-t border-gray-100"></div>
-                        <div className="p-4 space-y-1">
-                          <div className="grid grid-cols-2 gap-3 pt-2">
-                            <Link
-                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors"
-                              href="/login"
-                            >
-                              Sign In
-                            </Link>
-                            <Link
-                              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-green-600 text-green-600 font-semibold hover:bg-green-50 transition-colors"
-                              href="/register"
-                            >
-                              Sign Up
-                            </Link>
+
+                        {status === "unauthenticated" && (
+                          <div className="p-4 space-y-1">
+                            <div className="grid grid-cols-2 gap-3 pt-2">
+                              <Link
+                                onClick={() => setOpen(false)}
+                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition-colors"
+                                href="/login"
+                              >
+                                Sign In
+                              </Link>
+                              <Link
+                                onClick={() => setOpen(false)}
+                                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-green-600 text-green-600 font-semibold hover:bg-green-50 transition-colors"
+                                href="/register"
+                              >
+                                Sign Up
+                              </Link>
+                            </div>
                           </div>
-                        </div>
+                        )}
+
+                        {status === "authenticated" && (
+                          <div className="p-4 space-y-1">
+                            <Link
+                              onClick={() => setOpen(false)}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 transition-colors"
+                              href="/profile/addresses"
+                            >
+                              <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                                <svg
+                                  data-prefix="far"
+                                  data-icon="user"
+                                  className="svg-inline--fa fa-user text-gray-500"
+                                  role="img"
+                                  viewBox="0 0 448 512"
+                                  aria-hidden="true"
+                                  width={17.5}
+                                  height={14}
+                                >
+                                  <path
+                                    fill="currentColor"
+                                    d="M144 128a80 80 0 1 1 160 0 80 80 0 1 1 -160 0zm208 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0zM48 480c0-70.7 57.3-128 128-128l96 0c70.7 0 128 57.3 128 128l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-97.2-78.8-176-176-176l-96 0C78.8 304 0 382.8 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8z"
+                                  ></path>
+                                </svg>
+                              </div>
+                              <span className="font-medium text-gray-700">
+                                {session.user.name}
+                              </span>
+                            </Link>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                signOut({ callbackUrl: "/login" });
+                              }}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 transition-colors w-full text-left"
+                            >
+                              <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center">
+                                <svg
+                                  data-prefix="fas"
+                                  data-icon="right-from-bracket"
+                                  className="svg-inline--fa fa-right-from-bracket text-red-500"
+                                  role="img"
+                                  viewBox="0 0 512 512"
+                                  aria-hidden="true"
+                                  width={17.5}
+                                  height={14}
+                                >
+                                  <path
+                                    fill="currentColor"
+                                    d="M505 273c9.4-9.4 9.4-24.6 0-33.9L361 95c-6.9-6.9-17.2-8.9-26.2-5.2S320 102.3 320 112l0 80-112 0c-26.5 0-48 21.5-48 48l0 32c0 26.5 21.5 48 48 48l112 0 0 80c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2L505 273zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"
+                                  ></path>
+                                </svg>
+                              </div>
+                              <span className="font-medium text-red-600">
+                                Sign Out
+                              </span>
+                            </button>
+                          </div>
+                        )}
+
                         <Link
                           className="mx-4 mt-2 p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3 hover:bg-green-50 transition-colors"
                           href="/contact"
@@ -493,7 +544,7 @@ const Navbar = () => {
                             <div className="text-sm font-semibold text-gray-700">
                               Need Help?
                             </div>
-                            <div className="text-sm text-primary-600">
+                            <div className="text-sm text-green-600">
                               Contact Support
                             </div>
                           </div>

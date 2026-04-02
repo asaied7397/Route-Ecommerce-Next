@@ -1,9 +1,9 @@
-import Features from "./_components/Features/Features";
+import HomeComponent from "./_components/Home/HomeComponent";
 
 export default function Home() {
   return (
-    <main className="py-10">
-      <Features />
-    </main>
+    <>
+      <HomeComponent />
+    </>
   );
 }
