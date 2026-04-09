@@ -7,7 +7,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { fetchCart, clearCart } from "@/lib/redux/features/cart/cartSlice";
-import { createCashOrderThunk } from "@/lib/redux/features/checkout/checkoutSlice";
+import {
+  createCashOrderThunk,
+  createOnlineOrderThunk,
+} from "@/lib/redux/features/checkout/checkoutSlice";
 
 type PaymentMethod = "cash" | "online";
 
@@ -86,37 +89,95 @@ export default function CheckoutPage() {
     }
   };
 
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+
+  //   if (!session?.accessToken) return;
+  //   if (!cartId) return;
+  //   if (paymentMethod !== "cash") return;
+
+  //   const city = formData.city.trim();
+  //   const details = formData.details.trim();
+  //   const phone = formData.phone.trim();
+  //   const postalCode = formData.postalCode.trim();
+
+  //   if (!city || !details || !phone || !postalCode) {
+  //     setFormError("Please fill in all required fields.");
+  //     return;
+  //   }
+
+  //   setFormError("");
+
+  //   await dispatch(
+  //     createCashOrderThunk({
+  //       accessToken: session.accessToken,
+  //       cartId,
+  //       shippingAddress: {
+  //         city,
+  //         details,
+  //         phone,
+  //         postalCode,
+  //       },
+  //     }),
+  //   );
+  // };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!session?.accessToken) return;
     if (!cartId) return;
-    if (paymentMethod !== "cash") return;
 
     const city = formData.city.trim();
     const details = formData.details.trim();
     const phone = formData.phone.trim();
     const postalCode = formData.postalCode.trim();
 
-    if (!city || !details || !phone || !postalCode) {
+    if (!city || !details || !phone) {
       setFormError("Please fill in all required fields.");
       return;
     }
 
     setFormError("");
 
-    await dispatch(
-      createCashOrderThunk({
-        accessToken: session.accessToken,
-        cartId,
-        shippingAddress: {
-          city,
-          details,
-          phone,
-          postalCode,
-        },
-      }),
-    );
+    const shippingAddress = {
+      city,
+      details,
+      phone,
+      postalCode,
+    };
+
+    if (paymentMethod === "cash") {
+      await dispatch(
+        createCashOrderThunk({
+          accessToken: session.accessToken,
+          cartId,
+          shippingAddress,
+        }),
+      );
+
+      return;
+    }
+
+    if (paymentMethod === "online") {
+      const result = await dispatch(
+        createOnlineOrderThunk({
+          accessToken: session.accessToken,
+          cartId,
+          shippingAddress,
+          returnUrl: window.location.origin,
+        }),
+      );
+
+      if (createOnlineOrderThunk.fulfilled.match(result)) {
+        const paymentUrl = result.payload.session?.url;
+
+        if (paymentUrl) {
+          window.location.href = paymentUrl;
+          return;
+        }
+      }
+    }
   };
 
   if (status === "loading" || cartLoading) {
@@ -637,9 +698,7 @@ export default function CheckoutPage() {
 
                   <button
                     type="submit"
-                    disabled={
-                      checkoutLoading || !cartId || paymentMethod !== "cash"
-                    }
+                    disabled={checkoutLoading || !cartId}
                     className="mt-6 flex w-full items-center cursor-pointer justify-center gap-2 rounded-xl bg-linear-to-r from-green-600 to-green-700 py-4 font-bold text-white shadow-lg shadow-green-600/20 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     <svg
@@ -657,7 +716,13 @@ export default function CheckoutPage() {
                         d="M369.4 128l-34.3-48-222.1 0-34.3 48 290.7 0zM0 148.5c0-13.3 4.2-26.3 11.9-37.2L60.9 42.8C72.9 26 92.3 16 112.9 16l222.1 0c20.7 0 40.1 10 52.1 26.8l48.9 68.5c7.8 10.9 11.9 23.9 11.9 37.2L448 416c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 148.5z"
                       ></path>
                     </svg>
-                    {checkoutLoading ? "Placing Order..." : "Place Order"}
+                    {checkoutLoading
+                      ? paymentMethod === "cash"
+                        ? "Placing Order..."
+                        : "Redirecting to Payment..."
+                      : paymentMethod === "cash"
+                        ? "Place Order"
+                        : "Pay Now"}
                   </button>
 
                   <div className="flex items-center justify-center gap-4 mt-4 py-3 border-t border-gray-100">

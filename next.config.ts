@@ -1,10 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
   images: {
     domains: ["ecommerce.routemisr.com"],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/allorders",
+        destination: "/orders",
+        permanent: true,
+      },
+    ];
   },
 };
 

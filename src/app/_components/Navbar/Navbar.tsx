@@ -275,7 +275,9 @@ const Navbar = () => {
                   </svg>
                   {items.length ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-4.5 h-4.5 flex items-center justify-center">
-                      {items.length}
+                      {items
+                        .map((item) => item.count)
+                        .reduce((a, b) => a + b, 0)}
                     </span>
                   ) : null}
                 </Link>
