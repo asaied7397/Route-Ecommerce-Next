@@ -45,25 +45,6 @@ function FieldError({ error }: { error?: string[] }) {
   return <p className="text-sm text-red-600">{error[0]}</p>;
 }
 
-// function PasswordStrengthLabel(password?: string) {
-//   if (!password) {
-//     return { label: "Weak", width: "0%", color: "bg-red-500" };
-//   }
-
-//   let score = 0;
-//   if (password.length >= 8) score++;
-//   if (/[A-Z]/.test(password)) score++;
-//   if (/[a-z]/.test(password)) score++;
-//   if (/[0-9]/.test(password)) score++;
-//   if (/[^A-Za-z0-9]/.test(password)) score++;
-
-//   if (score <= 2) return { label: "Weak", width: "33%", color: "bg-red-500" };
-//   if (score <= 4)
-//     return { label: "Medium", width: "66%", color: "bg-yellow-500" };
-
-//   return { label: "Strong", width: "100%", color: "bg-green-500" };
-// }
-
 function PasswordStrengthLabel(password?: string) {
   if (!password) {
     return {

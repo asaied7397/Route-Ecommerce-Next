@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function Deals() {
@@ -26,7 +27,7 @@ export default function Deals() {
                   <span className="font-bold text-white">ORGANIC40</span>
                 </div>
               </div>
-              <a
+              <Link
                 className="inline-flex items-center gap-2 bg-white text-emerald-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
                 href="/products"
               >
@@ -46,7 +47,7 @@ export default function Deals() {
                     d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
                   ></path>
                 </svg>
-              </a>
+              </Link>
             </div>
           </div>
           <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-orange-400 to-rose-500 p-8 text-white">
@@ -70,7 +71,7 @@ export default function Deals() {
                   <span className="font-bold text-white">FRESH25</span>
                 </div>
               </div>
-              <a
+              <Link
                 className="inline-flex items-center gap-2 bg-white text-orange-500 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
                 href="/products?sort=newest"
               >
@@ -90,7 +91,7 @@ export default function Deals() {
                     d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
                   ></path>
                 </svg>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -9,6 +9,42 @@ import type {
   ProductDetailsData,
   SubcategoryLike,
 } from "@/types/types";
+import type { GetUserCartResponse } from "@/types/cart";
+
+function getErrorMessage(
+  error: unknown,
+  fallback = "Something went wrong",
+): string {
+  if (error instanceof Error) return error.message;
+  return fallback;
+}
+
+async function parseJsonResponse<T>(
+  res: Response,
+  fallbackMessage: string,
+): Promise<T> {
+  let data: T | { message?: string };
+
+  try {
+    data = (await res.json()) as T | { message?: string };
+  } catch {
+    throw new Error(fallbackMessage);
+  }
+
+  if (!res.ok) {
+    const message =
+      typeof data === "object" &&
+      data !== null &&
+      "message" in data &&
+      typeof data.message === "string"
+        ? data.message
+        : fallbackMessage;
+
+    throw new Error(message);
+  }
+
+  return data as T;
+}
 
 export async function getAllCategories(
   params: GetAllCategoriesParams = {},
@@ -28,129 +64,188 @@ export async function getAllCategories(
       },
     );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch categories");
-    }
+    const data = await parseJsonResponse<{ data: categoryType[] }>(
+      res,
+      "Failed to fetch categories",
+    );
 
-    const data = await res.json();
-    const categories = data.data;
-
-    return categories;
+    return data.data;
   } catch (error) {
-    throw error;
+    throw new Error(getErrorMessage(error, "Failed to fetch categories"));
   }
 }
 
 export async function getSpecificCategory(
   categoryId: string,
 ): Promise<CategoryLike> {
-  const res = await fetch(
-    `https://ecommerce.routemisr.com/api/v1/categories/${categoryId}`,
-  );
-  const data = await res.json();
-  const category = data.data;
-  return category;
+  try {
+    const res = await fetch(
+      `https://ecommerce.routemisr.com/api/v1/categories/${categoryId}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+
+    const data = await parseJsonResponse<{ data: CategoryLike }>(
+      res,
+      "Failed to fetch category",
+    );
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch category"));
+  }
 }
 
 export async function getAllProducts(
   params: GetAllProductsParams = {},
 ): Promise<ProductDetailsData[]> {
-  const searchParams = new URLSearchParams();
+  try {
+    const searchParams = new URLSearchParams();
 
-  if (params.limit) searchParams.set("limit", String(params.limit));
-  if (params.page) searchParams.set("page", String(params.page));
-  if (params.sort) searchParams.set("sort", params.sort);
-  if (params.fields) searchParams.set("fields", params.fields);
-  if (params.keyword) searchParams.set("keyword", params.keyword);
-  if (params.brand) searchParams.set("brand", params.brand);
-  if (params.priceGte !== undefined) {
-    searchParams.set("price[gte]", String(params.priceGte));
+    if (params.limit) searchParams.set("limit", String(params.limit));
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.fields) searchParams.set("fields", params.fields);
+    if (params.keyword) searchParams.set("keyword", params.keyword);
+    if (params.brand) searchParams.set("brand", params.brand);
+    if (params.priceGte !== undefined) {
+      searchParams.set("price[gte]", String(params.priceGte));
+    }
+    if (params.priceLte !== undefined) {
+      searchParams.set("price[lte]", String(params.priceLte));
+    }
+    if (params.categoryIn) {
+      searchParams.set("category[in]", params.categoryIn);
+    }
+
+    const res = await fetch(
+      `https://ecommerce.routemisr.com/api/v1/products?${searchParams.toString()}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+
+    const data = await parseJsonResponse<{ data: ProductDetailsData[] }>(
+      res,
+      "Failed to fetch products",
+    );
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch products"));
   }
-  if (params.priceLte !== undefined) {
-    searchParams.set("price[lte]", String(params.priceLte));
-  }
-
-  if (params.categoryIn) searchParams.set("category[in]", params.categoryIn);
-
-  const res = await fetch(
-    `https://ecommerce.routemisr.com/api/v1/products?${searchParams.toString()}`,
-    {
-      method: "GET",
-      cache: "no-store",
-    },
-  );
-  const data = await res.json();
-  const products = data.data;
-  return products;
 }
 
 export async function getAllProductsWithLimit(
   params: GetAllProductsParamsWithLimit = {},
 ): Promise<GetAllProductsResponse> {
-  const searchParams = new URLSearchParams();
+  try {
+    const searchParams = new URLSearchParams();
 
-  if (params.limit) searchParams.set("limit", String(params.limit));
-  if (params.page) searchParams.set("page", String(params.page));
-  if (params.sort) searchParams.set("sort", params.sort);
-  if (params.fields) searchParams.set("fields", params.fields);
-  if (params.keyword) searchParams.set("keyword", params.keyword);
-  if (params.priceGte !== undefined) {
-    searchParams.set("price[gte]", String(params.priceGte));
-  }
-  if (params.priceLte !== undefined) {
-    searchParams.set("price[lte]", String(params.priceLte));
-  }
+    if (params.limit) searchParams.set("limit", String(params.limit));
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.sort) searchParams.set("sort", params.sort);
+    if (params.fields) searchParams.set("fields", params.fields);
+    if (params.keyword) searchParams.set("keyword", params.keyword);
+    if (params.priceGte !== undefined) {
+      searchParams.set("price[gte]", String(params.priceGte));
+    }
+    if (params.priceLte !== undefined) {
+      searchParams.set("price[lte]", String(params.priceLte));
+    }
 
-  if (params.brand?.length) {
-    params.brand.forEach((brandId) => {
-      searchParams.append("brand", brandId);
-    });
-  }
+    if (params.brand?.length) {
+      params.brand.forEach((brandId) => {
+        searchParams.append("brand", brandId);
+      });
+    }
 
-  if (params.categoryIn?.length) {
-    params.categoryIn.forEach((categoryId) => {
-      searchParams.append("category[in]", categoryId);
-    });
-  }
+    if (params.categoryIn?.length) {
+      params.categoryIn.forEach((categoryId) => {
+        searchParams.append("category[in]", categoryId);
+      });
+    }
 
-  const res = await fetch(
-    `https://ecommerce.routemisr.com/api/v1/products?${searchParams.toString()}`,
-    {
-      method: "GET",
-      cache: "no-store",
-    },
-  );
-  const data = await res.json();
-  return data;
+    const res = await fetch(
+      `https://ecommerce.routemisr.com/api/v1/products?${searchParams.toString()}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+
+    return await parseJsonResponse<GetAllProductsResponse>(
+      res,
+      "Failed to fetch products",
+    );
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch products"));
+  }
 }
 
-export async function getSingleProduct(id: string) {
+export async function getSingleProduct(
+  id: string,
+): Promise<ProductDetailsData> {
   try {
     const res = await fetch(
       `https://ecommerce.routemisr.com/api/v1/products/${id}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
     );
-    const data = await res.json();
-    const product = data.data;
-    return product;
-  } catch {}
+
+    const data = await parseJsonResponse<{ data: ProductDetailsData }>(
+      res,
+      "Failed to fetch product",
+    );
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch product"));
+  }
 }
 
-export async function getAllBrands() {
+export async function getAllBrands(): Promise<BrandLike[]> {
   try {
-    const res = await fetch(`https://ecommerce.routemisr.com/api/v1/brands`);
-    const data = await res.json();
-    const brand = data.data;
-    return brand;
-  } catch {}
+    const res = await fetch(`https://ecommerce.routemisr.com/api/v1/brands`, {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    const data = await parseJsonResponse<{ data: BrandLike[] }>(
+      res,
+      "Failed to fetch brands",
+    );
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch brands"));
+  }
 }
 
 export async function getSpecificBrand(brandId: string): Promise<BrandLike> {
-  const res = await fetch(
-    `https://ecommerce.routemisr.com/api/v1/brands/${brandId}`,
-  );
-  const data = await res.json();
-  const brand = data.data;
-  return brand;
+  try {
+    const res = await fetch(
+      `https://ecommerce.routemisr.com/api/v1/brands/${brandId}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+
+    const data = await parseJsonResponse<{ data: BrandLike }>(
+      res,
+      "Failed to fetch brand",
+    );
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch brand"));
+  }
 }
 
 export async function getSubcategoriesByCategory(
@@ -165,50 +260,61 @@ export async function getSubcategoriesByCategory(
       },
     );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch subcategories");
-    }
+    const data = await parseJsonResponse<{ data: SubcategoryLike[] }>(
+      res,
+      "Failed to fetch subcategories",
+    );
 
-    const data = await res.json();
-    const subCategory = data.data;
-
-    return subCategory;
+    return data.data;
   } catch (error) {
-    throw error;
+    throw new Error(getErrorMessage(error, "Failed to fetch subcategories"));
   }
 }
 
 export async function getSpecificSubCategory(
   subCategoryId: string,
 ): Promise<SubcategoryLike> {
-  const res = await fetch(
-    `https://ecommerce.routemisr.com/api/v1/subcategories/${subCategoryId}`,
-  );
-  const data = await res.json();
-  const subCategory = data.data;
-  return subCategory;
-}
+  try {
+    const res = await fetch(
+      `https://ecommerce.routemisr.com/api/v1/subcategories/${subCategoryId}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
-import type { GetUserCartResponse } from "@/types/cart";
+    const data = await parseJsonResponse<{ data: SubcategoryLike }>(
+      res,
+      "Failed to fetch subcategory",
+    );
+
+    return data.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch subcategory"));
+  }
+}
 
 export async function getUserCart(
   accessToken: string,
 ): Promise<GetUserCartResponse> {
-  const res = await fetch("https://ecommerce.routemisr.com/api/v1/cart", {
-    method: "GET",
-    headers: {
-      token: accessToken,
-    },
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch("https://ecommerce.routemisr.com/api/v1/cart", {
+      method: "GET",
+      headers: {
+        token: accessToken,
+      },
+      cache: "no-store",
+    });
 
-  const data: GetUserCartResponse = await res.json();
+    const data = await parseJsonResponse<GetUserCartResponse>(
+      res,
+      "Failed to fetch cart",
+    );
 
-  console.log(data);
+    console.log(data);
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch cart");
+    return data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, "Failed to fetch cart"));
   }
-
-  return data;
 }

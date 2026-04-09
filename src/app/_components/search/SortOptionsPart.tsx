@@ -7,7 +7,7 @@ export const sortOptions = [
   { label: "Relevance", value: "" },
   { label: "Price: Low to High", value: "price" },
   { label: "Price: High to Low", value: "-price" },
-  { label: "Rating: High to Low", value: "-ratingAverage" },
+  { label: "Rating: High to Low", value: "-ratingsAverage" },
   { label: "Name: A to Z", value: "title" },
   { label: "Name: Z to A", value: "-title" },
 ];
@@ -32,7 +32,8 @@ export default function SortOptionsPart({ sort }: SortOptionsPartProps) {
 
     params.delete("page");
 
-    router.push(`${pathname}?${params.toString()}`);
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
   }
 
   return (

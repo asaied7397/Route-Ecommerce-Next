@@ -89,10 +89,7 @@ export async function signupAction(
     },
   );
 
-  console.log(res);
-
   const data = await res.json();
-  console.log(data);
 
   if (!res.ok) {
     return {

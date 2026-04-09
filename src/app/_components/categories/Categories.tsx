@@ -2,11 +2,9 @@ import { getAllCategories } from "@/services/api/api";
 import type { categoryType } from "@/types/types";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 export default async function Categories() {
   const categories = await getAllCategories();
-  // console.log(categories);
 
   return (
     <section className="py-10">

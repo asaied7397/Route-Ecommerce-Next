@@ -14,6 +14,8 @@ export default function NavbarForm() {
 
     const params = new URLSearchParams();
 
+    if (!trimmedValue) return;
+
     if (trimmedValue) {
       params.set("keyword", trimmedValue);
     }

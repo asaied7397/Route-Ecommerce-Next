@@ -89,39 +89,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   if (!session?.accessToken) return;
-  //   if (!cartId) return;
-  //   if (paymentMethod !== "cash") return;
-
-  //   const city = formData.city.trim();
-  //   const details = formData.details.trim();
-  //   const phone = formData.phone.trim();
-  //   const postalCode = formData.postalCode.trim();
-
-  //   if (!city || !details || !phone || !postalCode) {
-  //     setFormError("Please fill in all required fields.");
-  //     return;
-  //   }
-
-  //   setFormError("");
-
-  //   await dispatch(
-  //     createCashOrderThunk({
-  //       accessToken: session.accessToken,
-  //       cartId,
-  //       shippingAddress: {
-  //         city,
-  //         details,
-  //         phone,
-  //         postalCode,
-  //       },
-  //     }),
-  //   );
-  // };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
