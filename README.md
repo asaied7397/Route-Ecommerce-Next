@@ -1,36 +1,219 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🛒 FreshCart – Full-Stack E-commerce Platform
 
-## Getting Started
+📌 Overview
 
-First, run the development server:
+FreshCart is a modern, production-ready e-commerce web application built using Next.js (App Router) and TypeScript.
+The platform provides a complete shopping experience including authentication, cart management, address handling, checkout, and order tracking.
 
-```bash
+This project focuses on real-world frontend architecture, API integration, and secure authentication handling.
+
+⸻
+
+🚀 Live Demo
+
+https://route-ecommerce-next-gamma.vercel.app/
+⸻
+
+🧩 Features
+
+🔐 Authentication
+• User login using credentials
+• JWT-based session handling via NextAuth
+• Secure token storage and usage across API requests
+• Protected routes and authenticated user flows
+
+⸻
+
+🛍️ Product & Cart Management
+• Browse products dynamically from API
+• Add/remove items from cart
+• Update product quantities
+• Real-time cart updates
+
+⸻
+
+📍 Address Management
+• Add new addresses using validated forms (React Hook Form + Zod)
+• Fetch and display user addresses
+• Delete addresses
+• UI updates after CRUD operations
+
+⸻
+
+💳 Checkout & Online Payment
+• Integration with backend checkout session API
+• Send shipping address during checkout
+• Redirect user to payment gateway
+• Handle success redirect flow
+
+⸻
+
+📦 Orders System
+• Fetch user orders dynamically
+• Display order summary (status, date, items, price)
+• Expandable order details
+• Payment & delivery status indicators
+
+⸻
+
+⚙️ Profile Settings
+• Update user data (name, email, phone)
+• Change password with validation
+• Error & success handling from API responses
+
+⸻
+
+🎨 UI/UX
+• Fully responsive design (mobile, tablet, desktop)
+• Clean and modern UI using Tailwind CSS
+• Reusable components and structured layout
+• Empty states, loading states, and error handling
+
+⸻
+
+🛠 Tech Stack
+
+Frontend
+• Next.js (App Router)
+• React
+• TypeScript
+• Tailwind CSS
+
+State & Forms
+• React Hook Form
+• Zod (schema validation)
+
+Authentication
+• NextAuth (JWT strategy)
+
+Utilities
+• Fetch API
+• Custom helpers (JWT parsing, API handling)
+
+Deployment
+• Vercel
+
+⸻
+
+🧠 Architecture Highlights
+
+🔹 Authentication Flow
+• Credentials login → API returns JWT
+• Token stored inside NextAuth JWT session
+• Token injected into protected API requests
+
+⸻
+
+🔹 Data Fetching Strategy
+• Client-side fetching using useEffect
+• cache: “no-store” for fresh data
+• Controlled loading & error states
+
+⸻
+
+🔹 Component Structure
+• Reusable UI components (Cards, Dialogs, Forms)
+• Feature-based folder organization
+• Separation of concerns between UI and logic
+
+⸻
+
+🔹 Form Handling
+• Validation handled via Zod schemas
+• Integrated with React Hook Form
+• Controlled error display
+
+⸻
+
+📂 Project Structure
+
+app/
+├── /
+├── /profile
+│ ├── /addresses
+│ ├── /settings
+├── /products
+├── /categories
+├── /brands
+├── /login
+├── /signup
+├── /cart
+├── /wishlist
+├── /checkout
+├── /orders
+
+⸻
+
+⚙️ Installation & Setup
+
+Clone repo
+
+git clone https://github.com/asaied7397/Route-Ecommerce-Next
+
+Install dependencies
+
+npm install
+
+Run development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+⸻
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🧪 Testing Checklist
+• Login / Logout
+• Add to cart
+• Add / remove address
+• Checkout & redirect
+• Orders fetching
+• Profile update
+• Password change
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+⸻
 
-## Learn More
+🚧 Challenges & Solutions
 
-To learn more about Next.js, take a look at the following resources:
+Token Handling (NextAuth + API)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Handled JWT storage and ensured token is available in session and API requests.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Client Re-render Issues
 
-## Deploy on Vercel
+Solved UI not updating after mutations using state triggers and re-fetch patterns.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+TypeScript Strict Errors
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Handled optional API responses safely using proper typing and guards.
+
+Deployment Issues (Vercel)
+
+Resolved environment variable issues and server configuration errors.
+
+⸻
+
+📈 Future Improvements
+• Add real payment integration (Stripe)
+• Admin dashboard (manage products & orders)
+• Wishlist functionality
+• Product search & filters
+• Pagination & performance optimization
+• Global state management (React Query / Zustand)
+
+⸻
+
+👤 Author
+
+Abdulrahman Salah
+
+GitHub: https://github.com/your-username
+LinkedIn: https://linkedin.com/in/your-profile
+
+⸻
+
+⭐ Notes
+
+This project demonstrates:
+• Real-world API integration
+• Authentication handling
+• Clean UI implementation
+• Production-ready frontend practices
