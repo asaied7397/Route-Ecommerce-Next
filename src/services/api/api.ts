@@ -60,7 +60,7 @@ export async function getAllCategories(
       `https://ecommerce.routemisr.com/api/v1/categories?${searchParams.toString()}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -83,7 +83,7 @@ export async function getSpecificCategory(
       `https://ecommerce.routemisr.com/api/v1/categories/${categoryId}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -124,7 +124,7 @@ export async function getAllProducts(
       `https://ecommerce.routemisr.com/api/v1/products?${searchParams.toString()}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -173,7 +173,7 @@ export async function getAllProductsWithLimit(
       `https://ecommerce.routemisr.com/api/v1/products?${searchParams.toString()}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -194,7 +194,7 @@ export async function getSingleProduct(
       `https://ecommerce.routemisr.com/api/v1/products/${id}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -213,7 +213,7 @@ export async function getAllBrands(): Promise<BrandLike[]> {
   try {
     const res = await fetch(`https://ecommerce.routemisr.com/api/v1/brands`, {
       method: "GET",
-      cache: "no-store",
+      next: { revalidate: 60 * 60 * 24 },
     });
 
     const data = await parseJsonResponse<{ data: BrandLike[] }>(
@@ -233,7 +233,7 @@ export async function getSpecificBrand(brandId: string): Promise<BrandLike> {
       `https://ecommerce.routemisr.com/api/v1/brands/${brandId}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -256,7 +256,7 @@ export async function getSubcategoriesByCategory(
       `https://ecommerce.routemisr.com/api/v1/categories/${categoryId}/subcategories`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -279,7 +279,7 @@ export async function getSpecificSubCategory(
       `https://ecommerce.routemisr.com/api/v1/subcategories/${subCategoryId}`,
       {
         method: "GET",
-        cache: "no-store",
+        next: { revalidate: 60 * 60 * 24 },
       },
     );
 
@@ -303,7 +303,7 @@ export async function getUserCart(
       headers: {
         token: accessToken,
       },
-      cache: "no-store",
+      next: { revalidate: 60 * 60 * 24 },
     });
 
     const data = await parseJsonResponse<GetUserCartResponse>(

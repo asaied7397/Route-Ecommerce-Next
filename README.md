@@ -127,20 +127,26 @@ Deployment
 
 📂 Project Structure
 
-app/
-├── /
-├── /profile
-│ ├── /addresses
-│ ├── /settings
-├── /products
-├── /categories
-├── /brands
-├── /login
-├── /signup
-├── /cart
-├── /wishlist
-├── /checkout
-├── /orders
+Route (app) Revalidate Expire
+┌ ○ / 1d 1y
+├ ○ /\_not-found
+├ ○ /allorders
+├ ƒ /api/auth/[...nextauth]
+├ ○ /brands 1d 1y
+├ ○ /cart
+├ ƒ /categories
+├ ƒ /categories/[catID]
+├ ○ /checkout
+├ ○ /contact
+├ ○ /login
+├ ○ /orders
+├ ƒ /products
+├ ƒ /products/[id]
+├ ○ /profile/addresses
+├ ○ /profile/settings
+├ ○ /register
+├ ƒ /search
+└ ○ /wishlist
 
 ⸻
 
